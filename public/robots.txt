@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lanka-closely.hiran26personal.workers.dev/sitemap-index.xml
