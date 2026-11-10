@@ -1,5 +1,7 @@
 # Lanka, Closely
 
+**Live:** https://lanka-closely.hiran26personal.workers.dev
+
 A field guide to **reading** Sri Lanka. Instead of "what to see", each plate teaches what to *notice*: moonstones, guardstones, makara balustrades, stupas, vatadages, ancient tanks, the Sigiriya graffiti, Kandyan roofs, gopurams, Galle's VOC gate and tea-estate line rooms. Every plate also says where the best examples are.
 
 - Static site built with [Astro](https://astro.build) 5, with no server code
