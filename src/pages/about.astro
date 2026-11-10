@@ -1,0 +1,54 @@
+---
+import Base from '../layouts/Base.astro';
+import { allCredits, mapCredit } from '../lib/photos';
+---
+<Base title="About & sources" description="Why Lanka, Closely exists, how it was researched, and credits for every photograph.">
+  <header class="wrap page-head">
+    <p class="label">About</p>
+    <h1>A guide to <em>noticing</em>.</h1>
+  </header>
+  <div class="wrap about-grid">
+    <div class="prose">
+      <h2>The gap</h2>
+      <p>The official tourism portal is good for inspiration, Atlas Obscura for curiosities, guidebooks for logistics and Reddit for what's happening this week. Almost all of them are organised by <em>place</em>. The thing that turns a ruin from "brick and stone" into something you can read is the visual vocabulary those places share, and it is scattered across academic papers, single-site blog posts and the heads of good local guides.</p>
+      <p>Lanka, Closely collects that vocabulary into plates. Each one covers a single detail, how to recognise it, what it meant, how it changed, the usual misreadings, and where the best examples are. It isn't a replacement for a guide on site. It's meant to make you a better listener when you have one, and a sharper observer when you don't.</p>
+      <h2>How it was made</h2>
+      <p>The research started with the existing Sri Lanka travel sites and with what visitors say is missing from them. It then gathered facts for each detail from sources including the Central Cultural Fund, UNESCO, FAO, Wikipedia, archaeological writing by Senarath Paranavitana and others, and Sri Lankan heritage publications. Each plate lists its sources.</p>
+      <p>Where scholars disagree (the symbolism of the moonstone, the original roofs of the vatadages, the number of lost Sigiriya paintings), the plates say so rather than picking a story. If you spot an error, treat the plate as a field note and check it against the cited source.</p>
+      <h2>What it isn't</h2>
+      <p>It isn't a booking site, it doesn't cover opening times or ticket prices (they change too often to keep honest), and it isn't complete. This first edition has eleven plates. Kovil festival cars, Portuguese churches on the west coast, mosque architecture, Jaffna's palmyra landscape and Vedda rock art are all waiting for theirs.</p>
+    </div>
+    <section id="credits" class="credits" aria-labelledby="cred-h">
+      <h2 id="cred-h" class="label">Image credits</h2>
+      <p class="cred-intro">Every photograph comes from Wikimedia Commons and is used under the licence shown. Images are resized but not otherwise altered.</p>
+      <ul>
+        {allCredits.map((c) => (
+          <li>
+            <span class="c-cap">{c.caption}</span>
+            <span class="c-by"><a href={c.sourceUrl} rel="noopener">{c.author}</a> · <a href={c.licenseUrl} rel="license noopener">{c.license}</a></span>
+          </li>
+        ))}
+        {mapCredit && (
+          <li>
+            <span class="c-cap">Base map of Sri Lanka</span>
+            <span class="c-by"><a href={mapCredit.sourceUrl} rel="noopener">{mapCredit.author}</a> · <a href={mapCredit.licenseUrl} rel="license noopener">{mapCredit.license}</a> · recoloured</span>
+          </li>
+        )}
+      </ul>
+      <p class="cred-intro">Type: Newsreader (Production Type), IBM Plex Mono, and Noto Serif Sinhala and Tamil, all under the SIL Open Font License, served by Google Fonts.</p>
+    </section>
+  </div>
+</Base>
+<style>
+  .page-head { padding-top: clamp(32px, 6vw, 80px); padding-bottom: 40px; }
+  h1 { font-size: clamp(2.8rem, 1.4rem + 5vw, 6rem); font-weight: 330; letter-spacing: -0.035em; margin-top: 12px; }
+  h1 em { color: var(--laterite); }
+  .about-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
+  .credits ul { list-style: none; margin: 14px 0 20px; padding: 0; }
+  .credits li { padding: 9px 0; border-top: 1px solid var(--rule); display: flex; flex-direction: column; gap: 2px; font-size: 0.9rem; }
+  .c-cap { font-style: italic; }
+  .c-by { color: var(--ink-3); font-size: 0.82rem; }
+  .c-by a { color: inherit; }
+  .cred-intro { color: var(--ink-2); font-size: 0.92rem; }
+  @media (max-width: 860px) { .about-grid { grid-template-columns: 1fr; } }
+</style>

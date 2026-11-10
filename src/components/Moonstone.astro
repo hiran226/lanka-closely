@@ -1,0 +1,283 @@
+---
+// An engraved, interactive moonstone (sandakada pahana), drawn procedurally.
+// Rings are read from the outside in. Interpretation follows Senarath Paranavitana,
+// presented as one reading among several.
+interface Props { compact?: boolean }
+const { compact = false } = Astro.props;
+
+const W = 600, H = 316, cx = 300, cy = 306;
+const f = (n: number) => n.toFixed(1);
+const P = (r: number, t: number) => [cx + r * Math.cos(t), cy + r * Math.sin(t)];
+const pt = (r: number, t: number) => { const [x, y] = P(r, t); return `${f(x)} ${f(y)}`; };
+const A0 = Math.PI, A1 = 2 * Math.PI; // upper semicircle
+
+// annular sector (for hit areas and band fills)
+const sector = (r0: number, r1: number) =>
+  `M${pt(r1, A0)} A${r1} ${r1} 0 0 1 ${pt(r1, A1)} L${pt(r0, A1)} A${r0} ${r0} 0 0 0 ${pt(r0, A0)} Z`;
+const arc = (r: number) => `M${pt(r, A0)} A${r} ${r} 0 0 1 ${pt(r, A1)}`;
+
+// 1 — flames
+const flames: string[] = [];
+{
+  const n = 46, rb = 254, rt = 290;
+  for (let i = 0; i < n; i++) {
+    const a = A0 + (i / n) * Math.PI, b = A0 + ((i + 1) / n) * Math.PI, m = (a + b) / 2;
+    const lean = (b - a) * 0.55;
+    flames.push(
+      `M${pt(rb, a)} Q${pt(rb + 20, a + (b - a) * 0.1)} ${pt(rt, m + lean)} Q${pt(rb + 16, b - (b - a) * 0.05)} ${pt(rb, b)}`
+    );
+  }
+}
+
+// 2 — the four beasts (elephant, lion, horse, bull), processing round the ring
+const glyphs: Record<string, string> = {
+  elephant: 'M-15 2C-15-7-7-11 1-11C8-11 12-8 14-4C16-1 16 4 15 10H12.5C12.5 7 12.5 4.5 11.5 3V10H8.5V4H-6V10H-9.5V4C-13 4-15 4-15 2Z',
+  lion: 'M-14 1C-14-4-8-5 0-5C2-7 4-10 8-10.5C12-11 15-8 14-4C14-1.5 12 0 10 1V10H7.5L6.5 3H-6L-7 10H-9.5V2C-12 1-15-2-17-5C-15-3.5-14-1.5-14 1Z',
+  horse: 'M-14-1C-13-5-7-6 2-6L8-11.5C10-12.5 12.5-11.5 12-9.5L10.5-6.5C11.5-4.5 10.5-2 8.5-1V10H6.5L5.5 2H-7L-8.5 10H-10.5V0C-12.5 1.5-14.5 4-16 6C-16 2.5-15 0.5-14-1Z',
+  bull: 'M-14-2C-14-6.5-9-7.5-3-7.5C-1-10.5 3.5-10.5 4.5-7.5C7.5-7.5 10-8.5 12-11L12.5-7.5C14.5-6.5 14.5-2 12.5 0L10.5 1V10H8.5L7.5 2.5H-6.5L-7.5 10H-9.5V1C-12.5 0-14-1-14-2Z',
+};
+const order = ['elephant', 'lion', 'horse', 'bull'];
+const beasts: { d: string; x: number; y: number; rot: number }[] = [];
+{
+  const n = 16, r = 224;
+  for (let i = 0; i < n; i++) {
+    const t = A0 + ((i + 0.5) / n) * Math.PI;
+    const [x, y] = P(r, t);
+    beasts.push({ d: glyphs[order[i % 4]], x, y, rot: (t * 180) / Math.PI + 90 });
+  }
+}
+
+// 3 — creeper (liyavel): a sinuous vine with curls
+let creeper = '';
+const curls: { x: number; y: number; r: number }[] = [];
+{
+  const steps = 360, base = 180, amp = 9, k = 22;
+  for (let i = 0; i <= steps; i++) {
+    const t = A0 + (i / steps) * Math.PI;
+    const r = base + amp * Math.sin(k * (t - A0));
+    creeper += (i ? ' L' : 'M') + pt(r, t);
+  }
+  for (let j = 0; j < k; j++) {
+    const t = A0 + ((j + 0.25) / k) * Math.PI;
+    const r = base + (j % 2 ? -1 : 1) * 2;
+    const [x, y] = P(r + (j % 2 ? -11 : 11) * 0.9, t);
+    curls.push({ x, y, r: 3.6 });
+  }
+}
+
+// 4 — geese (hamsa)
+const goose = 'M-11 4C-11-1.5-5-4.5 1-3C3-8 8.5-9.5 10.5-6C11.5-4 10-2.5 8.5-2.5C7 0 6.5 4 3.5 6C-0.5 8.5-8.5 8.5-11 4Z';
+const geese: { x: number; y: number; rot: number }[] = [];
+{
+  const n = 14, r = 140;
+  for (let i = 0; i < n; i++) {
+    const t = A0 + ((i + 0.5) / n) * Math.PI;
+    const [x, y] = P(r, t);
+    geese.push({ x, y, rot: (t * 180) / Math.PI + 90 });
+  }
+}
+
+// 5 — half-lotus
+const petals: string[] = [];
+{
+  const layers = [ { n: 9, r0: 34, r1: 112, w: 0.16 }, { n: 7, r0: 22, r1: 74, w: 0.2 } ];
+  for (const L of layers) {
+    for (let i = 0; i < L.n; i++) {
+      const t = A0 + ((i + 0.5) / L.n) * Math.PI;
+      const w = L.w * Math.PI * (9 / L.n);
+      petals.push(
+        `M${pt(L.r0, t - w * 0.35)} Q${pt(L.r1 * 0.78, t - w * 0.62)} ${pt(L.r1, t)} Q${pt(L.r1 * 0.78, t + w * 0.62)} ${pt(L.r0, t + w * 0.35)}`
+      );
+    }
+  }
+}
+
+const rings = [
+  { id: 'flames', n: 1, name: 'Flames', si: 'ගිනිදැල්', r0: 250, r1: 296,
+    reading: 'The outer edge burns. In Paranavitana’s reading these are the fires of saṃsāra — the cycle of birth, death and rebirth that every visitor steps across first.' },
+  { id: 'beasts', n: 2, name: 'The four beasts', si: 'සිව්පාවුන්', r0: 202, r1: 250,
+    reading: 'Elephant, lion, horse and bull chase one another round the ring and never arrive. Read as the four sorrows: birth, decay, disease and death.' },
+  { id: 'creeper', n: 3, name: 'The creeper', si: 'ලියවැල', r0: 160, r1: 202,
+    reading: 'A liyavel vine that winds and curls back on itself — taṇhā, craving: the desire that keeps the wheel turning.' },
+  { id: 'geese', n: 4, name: 'The geese', si: 'හංසයෝ', r0: 118, r1: 160,
+    reading: 'Hamsa were said to separate milk from water. Here they stand for discernment — telling the good from the bad.' },
+  { id: 'lotus', n: 5, name: 'The lotus', si: 'පියුම', r0: 0, r1: 118,
+    reading: 'At the centre, a half-lotus: purity and release. It sits exactly where your foot meets the first step into the shrine.' },
+];
+---
+<figure class:list={['moonstone', { compact }]} data-moonstone>
+  <div class="ms-art">
+    <svg viewBox={`0 0 ${W} ${H}`} role="group" aria-label="Interactive moonstone diagram. Choose a ring to read its meaning.">
+      <defs>
+        <clipPath id="ms-clip"><path d={sector(0, 298)} /></clipPath>
+      </defs>
+      <path class="ms-ground" d={sector(0, 298)} />
+      <g class="ms-lines" clip-path="url(#ms-clip)">
+        {[296, 250, 202, 160, 118].map((r) => <path d={arc(r)} />)}
+        {[292, 254, 198, 164, 122, 30].map((r) => <path class="thin" d={arc(r)} />)}
+      </g>
+
+      <g class="ring" data-ring="flames" style="--i:0">
+        <path class="hit" d={sector(250, 298)} />
+        {flames.map((d) => <path class="stroke" d={d} />)}
+      </g>
+      <g class="ring" data-ring="beasts" style="--i:1">
+        <path class="hit" d={sector(202, 250)} />
+        {beasts.map((b) => (
+          <path class="fill" d={b.d} transform={`translate(${f(b.x)} ${f(b.y)}) rotate(${f(b.rot)}) scale(1.05)`} />
+        ))}
+      </g>
+      <g class="ring" data-ring="creeper" style="--i:2">
+        <path class="hit" d={sector(160, 202)} />
+        <path class="stroke" d={creeper} />
+        {curls.map((c) => <circle class="stroke" cx={f(c.x)} cy={f(c.y)} r={c.r} />)}
+      </g>
+      <g class="ring" data-ring="geese" style="--i:3">
+        <path class="hit" d={sector(118, 160)} />
+        {geese.map((g) => (
+          <g transform={`translate(${f(g.x)} ${f(g.y)}) rotate(${f(g.rot)})`}>
+            <path class="fill" d={goose} />
+            <circle class="fill" cx="12.5" cy="-7.5" r="1.6" />
+          </g>
+        ))}
+      </g>
+      <g class="ring" data-ring="lotus" style="--i:4">
+        <path class="hit" d={sector(0, 118)} />
+        {petals.map((d) => <path class="stroke" d={d} />)}
+        <path class="fill" d={`M${cx - 20} ${cy} A20 20 0 0 1 ${cx + 20} ${cy} Z`} />
+      </g>
+      <path class="ms-base" d={`M${cx - 298} ${cy} H${cx + 298}`} />
+    </svg>
+
+    <div class="ms-keys" role="tablist" aria-label="Moonstone rings, outside in">
+      {rings.map((r, i) => (
+        <button
+          type="button"
+          role="tab"
+          class="ms-key"
+          data-key={r.id}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          aria-controls="ms-panel"
+          tabindex={i === 0 ? 0 : -1}
+        >
+          <span class="mono">{String(r.n).padStart(2, '0')}</span>
+          <span class="ms-key-name">{r.name}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <figcaption class="ms-panel" id="ms-panel" role="tabpanel" aria-live="polite">
+    {rings.map((r, i) => (
+      <div class="ms-read" data-read={r.id} hidden={i !== 0}>
+        <p class="label">Ring {r.n} of 5 · reading outside in</p>
+        <h3>{r.name} <span class="si" lang="si">{r.si}</span></h3>
+        <p>{r.reading}</p>
+      </div>
+    ))}
+    <div class="ms-nav">
+      <button type="button" class="ms-step" data-step="-1" aria-label="Previous ring">←</button>
+      <button type="button" class="ms-step" data-step="1" aria-label="Next ring">→</button>
+      <p class="ms-caveat">After Senarath Paranavitana. It is the best-known reading, not a settled one — other scholars see only auspicious ornament.</p>
+    </div>
+  </figcaption>
+</figure>
+
+<style>
+  .moonstone { margin: 0; display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: clamp(20px, 4vw, 56px); align-items: center; }
+  .moonstone.compact { grid-template-columns: 1fr; }
+  .ms-art svg { width: 100%; height: auto; overflow: visible; color: var(--ink); }
+  .ms-ground { fill: var(--paper-2); }
+  .ms-lines path { fill: none; stroke: var(--ink); stroke-width: 1.2; opacity: 0.55; }
+  .ms-lines path.thin { stroke-width: 0.6; opacity: 0.35; }
+  .ms-base { stroke: var(--ink); stroke-width: 1.4; }
+  .ring { cursor: pointer; transition: opacity 0.45s var(--ease); }
+  .ring .hit { fill: transparent; }
+  .ring .stroke { fill: none; stroke: currentColor; stroke-width: 1.15; stroke-linecap: round; stroke-linejoin: round; }
+  .ring .fill { fill: currentColor; }
+  .ring { color: var(--ink); }
+  .ring.is-active { color: var(--laterite); }
+  .ring.is-active .hit { fill: color-mix(in srgb, var(--laterite) 9%, transparent); }
+  [data-moonstone].has-active .ring:not(.is-active) { opacity: 0.32; }
+  [data-moonstone].has-active .ring:not(.is-active):hover { opacity: 0.7; }
+
+  /* engraved entrance */
+  .ring { animation: ms-in 0.9s var(--ease) both; animation-delay: calc(var(--i) * 0.14s + 0.1s); }
+  @keyframes ms-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  [data-moonstone].has-active .ring:not(.is-active) { animation: none; }
+
+  .ms-keys { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; justify-content: center; }
+  .ms-key {
+    appearance: none; background: transparent; border: 1px solid var(--rule); color: var(--ink-2);
+    font: inherit; font-size: 0.86rem; padding: 6px 11px 6px 9px; border-radius: 999px; cursor: pointer;
+    display: inline-flex; gap: 7px; align-items: baseline;
+  }
+  .ms-key .mono { font-size: 0.64rem; color: var(--ink-3); }
+  .ms-key:hover { border-color: var(--rule-strong); color: var(--ink); }
+  .ms-key[aria-selected='true'] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .ms-key[aria-selected='true'] .mono { color: var(--paper); opacity: 0.7; }
+
+  .ms-panel { min-height: 260px; display: flex; flex-direction: column; }
+  .ms-read h3 { font-size: clamp(1.8rem, 1.3rem + 1.6vw, 2.6rem); margin: 0.25em 0 0.45em; font-style: italic; }
+  .ms-read h3 .si { font-style: normal; font-size: 0.5em; color: var(--ink-3); margin-left: 0.3em; white-space: nowrap; }
+  .ms-read p:last-child { font-size: 1.08em; color: var(--ink-2); max-width: 38ch; }
+  .ms-nav { margin-top: auto; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding-top: 14px; border-top: 1px solid var(--rule); }
+  .ms-step {
+    appearance: none; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--rule-strong);
+    background: transparent; color: var(--ink); font-size: 1.05rem; cursor: pointer;
+  }
+  .ms-step:hover { background: var(--ink); color: var(--paper); }
+  .ms-caveat { flex: 1 1 200px; margin: 0 0 0 8px; font-size: 0.82rem; color: var(--ink-3); line-height: 1.4; }
+
+  @media (max-width: 860px) {
+    .moonstone { grid-template-columns: 1fr; }
+    .ms-panel { min-height: 0; }
+    .ms-read p:last-child { max-width: none; }
+  }
+  @media (max-width: 480px) {
+    .ms-key { font-size: 0.8rem; padding: 5px 9px 5px 8px; }
+  }
+</style>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-moonstone]')) {
+    const ids = ['flames', 'beasts', 'creeper', 'geese', 'lotus'];
+    let idx = 0;
+    const rings = root.querySelectorAll<SVGGElement>('.ring');
+    const keys = root.querySelectorAll<HTMLButtonElement>('.ms-key');
+    const reads = root.querySelectorAll<HTMLElement>('.ms-read');
+
+    function set(i: number, focusKey = false) {
+      idx = (i + ids.length) % ids.length;
+      const id = ids[idx];
+      root.classList.add('has-active');
+      rings.forEach((r) => r.classList.toggle('is-active', r.dataset.ring === id));
+      keys.forEach((k) => {
+        const on = k.dataset.key === id;
+        k.setAttribute('aria-selected', String(on));
+        k.tabIndex = on ? 0 : -1;
+        if (on && focusKey) k.focus();
+      });
+      reads.forEach((r) => (r.hidden = r.dataset.read !== id));
+    }
+
+    rings.forEach((r) => {
+      r.addEventListener('click', () => set(ids.indexOf(r.dataset.ring!)));
+      r.addEventListener('mouseenter', () => {
+        if (window.matchMedia('(hover: hover)').matches) set(ids.indexOf(r.dataset.ring!));
+      });
+    });
+    keys.forEach((k, i) => {
+      k.addEventListener('click', () => set(i));
+      k.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); set(idx + 1, true); }
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); set(idx - 1, true); }
+      });
+    });
+    root.querySelectorAll<HTMLButtonElement>('.ms-step').forEach((b) =>
+      b.addEventListener('click', () => set(idx + Number(b.dataset.step)))
+    );
+    // start highlighted on the outer ring once the engraving has drawn
+    setTimeout(() => { if (!root.classList.contains('has-active')) set(0); }, 1200);
+  }
+</script>

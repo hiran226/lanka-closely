@@ -1,0 +1,37 @@
+---
+import { Image } from 'astro:assets';
+import { photo, platePhotos } from '../lib/photos';
+interface Props { entry: any; eager?: boolean }
+const { entry, eager = false } = Astro.props;
+const d = entry.data;
+const p = photo(platePhotos[entry.id]?.[0] ?? entry.id);
+const no = String(d.number).padStart(2, '0');
+---
+<li class="plate reveal" data-layer={d.layer} data-filter-item={d.layer}>
+  <a href={`/plates/${entry.id}/`} class="plate-link">
+    <div class="plate-img">
+      {p && <Image src={p.img} alt="" widths={[400, 700, 1000]} sizes="(max-width: 600px) 92vw, (max-width: 1000px) 46vw, 30vw" loading={eager ? 'eager' : 'lazy'} format="webp" quality={72} />}
+      <span class="plate-no mono">Pl. {no}</span>
+    </div>
+    <div class="plate-body">
+      <p class="plate-native" lang={d.nativeLang} class:list={[d.nativeLang]}>{d.native}</p>
+      <h3>{d.title}</h3>
+      <p class="plate-kicker">{d.kicker}</p>
+      <p class="plate-meta label"><span class="layer" data-layer={d.layer}>{d.layer}</span></p>
+    </div>
+  </a>
+</li>
+<style>
+  .plate { list-style: none; }
+  .plate-link { display: block; text-decoration: none; color: inherit; height: 100%; }
+  .plate-img { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--paper-3); }
+  .plate-img :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform 1.1s var(--ease), filter 0.6s; filter: saturate(0.92) contrast(1.02); }
+  .plate-link:hover .plate-img :global(img) { transform: scale(1.035); filter: none; }
+  .plate-no { position: absolute; left: 10px; top: 10px; background: var(--paper); color: var(--ink); padding: 3px 7px; font-size: 0.66rem; }
+  .plate-body { padding: 14px 2px 0; border-top: 3px solid var(--layer-c); margin-top: 0; }
+  .plate-native { margin: 0; color: var(--ink-3); font-size: 0.95rem; }
+  .plate h3 { font-size: clamp(1.45rem, 1.2rem + 0.7vw, 1.85rem); margin: 0.1em 0 0.25em; }
+  .plate-link:hover h3 { color: var(--laterite-ink); }
+  .plate-kicker { margin: 0 0 0.7em; color: var(--ink-2); font-style: italic; }
+  .plate-meta { margin: 0; }
+</style>

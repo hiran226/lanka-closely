@@ -1,0 +1,198 @@
+/* Lanka, Closely — design tokens & base styles
+   Palette drawn from lime plaster, laterite, Kandyan ochre, granite and lamp-black ink. */
+
+:root {
+  --paper: #f3ecdf;
+  --paper-2: #e9dfcc;
+  --paper-3: #ddd0b8;
+  --ink: #1d1814;
+  --ink-2: #4f453c;
+  --ink-3: #7a6e62;
+  --rule: rgba(29, 24, 20, 0.16);
+  --rule-strong: rgba(29, 24, 20, 0.42);
+  --laterite: #9e4326;
+  --laterite-ink: #8a3a20;
+  --ochre: #b98222;
+  --indigo: #24304a;
+  --focus: #9e4326;
+
+  --layer-buddhist: #b98222;
+  --layer-hindu: #b23a48;
+  --layer-royal: #3d4f7a;
+  --layer-water: #2c6c6a;
+  --layer-colonial: #6f675d;
+  --layer-plantation: #4d6a33;
+
+  --f-display: 'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --f-body: 'Newsreader', 'Iowan Old Style', Georgia, serif;
+  --f-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --f-si: 'Noto Serif Sinhala', 'Iskoola Pota', serif;
+  --f-ta: 'Noto Serif Tamil', 'Latha', serif;
+
+  --wrap: 1240px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --radius: 2px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: #15120f;
+    --paper-2: #1e1a16;
+    --paper-3: #2a241e;
+    --ink: #efe6d6;
+    --ink-2: #c9bca8;
+    --ink-3: #988b79;
+    --rule: rgba(239, 230, 214, 0.14);
+    --rule-strong: rgba(239, 230, 214, 0.4);
+    --laterite: #e0805c;
+    --laterite-ink: #e9906d;
+    --ochre: #d9a74b;
+    --indigo: #9fb0d6;
+    --focus: #e0805c;
+    --layer-buddhist: #d9a74b;
+    --layer-hindu: #e06b78;
+    --layer-royal: #95a8d8;
+    --layer-water: #6fb7b3;
+    --layer-colonial: #b3a99b;
+    --layer-plantation: #98ba72;
+    color-scheme: dark;
+  }
+}
+:root[data-theme='dark'] {
+  --paper: #15120f;
+  --paper-2: #1e1a16;
+  --paper-3: #2a241e;
+  --ink: #efe6d6;
+  --ink-2: #c9bca8;
+  --ink-3: #988b79;
+  --rule: rgba(239, 230, 214, 0.14);
+  --rule-strong: rgba(239, 230, 214, 0.4);
+  --laterite: #e0805c;
+  --laterite-ink: #e9906d;
+  --ochre: #d9a74b;
+  --indigo: #9fb0d6;
+  --focus: #e0805c;
+  --layer-buddhist: #d9a74b;
+  --layer-hindu: #e06b78;
+  --layer-royal: #95a8d8;
+  --layer-water: #6fb7b3;
+  --layer-colonial: #b3a99b;
+  --layer-plantation: #98ba72;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: clamp(17px, 0.35vw + 15.6px, 19.5px);
+  line-height: 1.55;
+  font-optical-sizing: auto;
+  font-variant-numeric: oldstyle-nums proportional-nums;
+  overflow-x: hidden;
+}
+
+/* faint paper grain */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.36 0 0 0 0 0.25 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+body > * { position: relative; z-index: 1; }
+
+img, svg { display: block; max-width: 100%; }
+img { height: auto; }
+
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+a:hover { color: var(--laterite-ink); }
+
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 1px; }
+
+::selection { background: var(--ochre); color: #1d1814; }
+
+h1, h2, h3, h4 {
+  font-family: var(--f-display);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  margin: 0;
+  text-wrap: balance;
+}
+p { margin: 0 0 1em; text-wrap: pretty; }
+
+.wrap { width: 100%; max-width: var(--wrap); margin-inline: auto; padding-inline: var(--gutter); }
+
+.mono, .label {
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.label { color: var(--ink-3); }
+
+.si { font-family: var(--f-si); line-height: 1.6; letter-spacing: 0; }
+.ta { font-family: var(--f-ta); line-height: 1.6; letter-spacing: 0; }
+
+.rule { border: 0; border-top: 1px solid var(--rule); margin: 0; }
+
+.skip {
+  position: absolute; left: -9999px; top: 0; z-index: 100;
+  background: var(--ink); color: var(--paper); padding: 10px 14px;
+}
+.skip:focus { left: 12px; top: 12px; }
+
+.visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+/* layer swatch */
+.layer { display: inline-flex; align-items: center; gap: 0.5em; }
+.layer::before {
+  content: ''; width: 0.62em; height: 0.62em; border-radius: 50%;
+  background: var(--layer-c, var(--ink-3));
+}
+[data-layer='Buddhist'] { --layer-c: var(--layer-buddhist); }
+[data-layer='Hindu'] { --layer-c: var(--layer-hindu); }
+[data-layer='Royal'] { --layer-c: var(--layer-royal); }
+[data-layer='Water'] { --layer-c: var(--layer-water); }
+[data-layer='Colonial'] { --layer-c: var(--layer-colonial); }
+[data-layer='Plantation'] { --layer-c: var(--layer-plantation); }
+
+/* prose */
+.prose h2 {
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  margin: 1.6em 0 0.55em;
+  font-style: italic;
+}
+.prose h2:first-child { margin-top: 0; }
+.prose p { max-width: 64ch; }
+.prose em { font-style: italic; }
+
+/* reveal on scroll */
+.reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
+.reveal.is-in { opacity: 1; transform: none; }
+.no-js .reveal { opacity: 1; transform: none; }

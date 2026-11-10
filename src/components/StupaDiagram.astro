@@ -1,0 +1,147 @@
+---
+// Annotated stupa profile + the six classical dome shapes.
+const G = 338; // top of terraces (dome base)
+const shapes = [
+  { id: 'bubble', name: 'Bubble', term: 'bubbulakara', top: 197, ex: 'Ruwanwelisaya today; Rankoth and Kiri Vehera, Polonnaruwa',
+    d: `M100 ${G} C100 150 420 150 420 ${G} Z` },
+  { id: 'bell', name: 'Bell', term: 'ghantakara', top: 191, ex: 'Ambasthala Dagaba, Mihintale',
+    d: `M92 ${G} C140 330 150 290 160 240 C175 175 345 175 360 240 C370 290 380 330 428 ${G} Z` },
+  { id: 'pot', name: 'Pot', term: 'ghatakara', top: 186, ex: 'A recognised classical type',
+    d: `M122 ${G} C88 300 95 230 150 205 C210 180 310 180 370 205 C425 230 432 300 398 ${G} Z` },
+  { id: 'paddy', name: 'Heap of paddy', term: 'dhanyakara', top: 200, ex: 'The early giants — Jetavana, Abhayagiri, Mirisaveti — began like this',
+    d: `M84 ${G} C150 300 205 206 260 200 C315 206 370 300 436 ${G} Z` },
+  { id: 'lotus', name: 'Lotus', term: 'padmakara', top: 207, ex: 'A recognised classical type',
+    d: `M108 ${G} C120 326 132 320 142 318 C142 170 378 170 378 318 C388 320 400 326 412 ${G} Z` },
+  { id: 'amalaka', name: 'Amalaka', term: 'amalaka (gooseberry)', top: 198, ex: 'A recognised classical type',
+    d: `M132 ${G} C80 320 80 220 170 205 C220 195 300 195 350 205 C440 220 440 320 388 ${G} Z` },
+];
+const parts = [
+  { id: 'kotha', name: 'Kotha', si: 'කොත', text: 'The pinnacle: a crystal or metal finial that catches the light first.' },
+  { id: 'kerella', name: 'Koth kerella', si: 'කොත් කැරැල්ල', text: 'The tapering spire, ringed like a stack of parasols.' },
+  { id: 'devatha', name: 'Devatha kotuwa', si: 'දේවතා කොටුව', text: 'The cylindrical neck, sometimes carved with figures of deities.' },
+  { id: 'hatharas', name: 'Hatharas kotuwa', si: 'හතරැස් කොටුව', text: 'The square “tee” block that sits on top of the dome.' },
+  { id: 'garbha', name: 'Garbha', si: 'ගර්භය', text: 'The dome itself — solid brick. The relic chamber lies sealed deep inside; a stupa is not a building you enter.' },
+  { id: 'pesa', name: 'Pesa valalu', si: 'පේසා වළලු', text: 'Three diminishing terraces at the base. Walk them clockwise, keeping the stupa on your right.' },
+];
+const s0 = shapes[0];
+---
+<figure class="stupa-fig" data-stupa>
+  <div class="st-art">
+    <svg viewBox="0 0 520 400" role="group" aria-label="Annotated stupa profile">
+      <line x1="20" y1="380" x2="500" y2="380" class="st-ground" />
+      <g class="st-part" data-part="pesa">
+        <rect x="60" y="366" width="400" height="14" />
+        <rect x="75" y="352" width="370" height="14" />
+        <rect x="90" y="338" width="340" height="14" />
+      </g>
+      <g class="st-part" data-part="garbha">
+        <path class="st-dome" d={s0.d} />
+        <g class="st-ribs" aria-hidden="true">
+          <path d="M260 340 C230 300 225 240 260 198" /><path d="M260 340 C290 300 295 240 260 198" />
+          <path d="M260 340 C180 300 175 230 220 202" /><path d="M260 340 C340 300 345 230 300 202" />
+        </g>
+      </g>
+      <g class="st-spire" style={`transform: translateY(${s0.top - 197}px)`}>
+        <g class="st-part" data-part="hatharas"><rect x="226" y="150" width="68" height="50" /><line x1="226" y1="162" x2="294" y2="162" /></g>
+        <g class="st-part" data-part="devatha"><rect x="236" y="132" width="48" height="18" /></g>
+        <g class="st-part" data-part="kerella">
+          <path d="M240 132 L256 40 L264 40 L280 132 Z" />
+          {[118, 104, 90, 76, 62].map((y) => { const w = 20 - (132 - y) * 0.18; return <line x1={260 - w} y1={y} x2={260 + w} y2={y} />; })}
+        </g>
+        <g class="st-part" data-part="kotha"><path d="M256 40 L260 14 L264 40 Z" /><circle cx="260" cy="12" r="4" /></g>
+      </g>
+    </svg>
+  </div>
+
+  <div class="st-side">
+    <p class="label">Anatomy — tap a part</p>
+    <ul class="st-parts">
+      {parts.map((p) => (
+        <li><button type="button" data-part-btn={p.id} aria-pressed="false"><span>{p.name}</span> <span class="si" lang="si">{p.si}</span></button></li>
+      ))}
+    </ul>
+    <p class="st-text" aria-live="polite">Six parts, read from the ground up or the sky down. Pick one.</p>
+
+    <p class="label st-shapes-label">Six classical dome shapes</p>
+    <div class="st-shapes" role="radiogroup" aria-label="Dome shape">
+      {shapes.map((s, i) => (
+        <button type="button" role="radio" aria-checked={i === 0 ? 'true' : 'false'} data-shape={s.id} data-d={s.d} data-top={s.top} data-ex={s.ex} data-term={s.term}>{s.name}</button>
+      ))}
+    </div>
+    <p class="st-shape-note"><em class="st-term">{s0.term}</em> — <span class="st-ex">{s0.ex}</span></p>
+  </div>
+</figure>
+
+<style>
+  .stupa-fig { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(20px, 4vw, 48px); align-items: center; }
+  .st-art { background: var(--paper-2); padding: 18px 10px 6px; }
+  .st-art svg { width: 100%; height: auto; overflow: visible; }
+  .st-ground { stroke: var(--ink); stroke-width: 1.4; }
+  .st-part { fill: color-mix(in srgb, var(--paper) 70%, transparent); stroke: var(--ink); stroke-width: 1.3; cursor: pointer; transition: fill 0.3s, stroke 0.3s, opacity 0.3s; }
+  .st-part line { stroke-width: 0.8; }
+  .st-ribs path { fill: none; stroke-width: 0.6; opacity: 0.35; }
+  .st-dome { transition: d 0.7s var(--ease); }
+  .st-spire { transition: transform 0.7s var(--ease); }
+  .st-ribs { opacity: 0; transition: opacity 0.4s; }
+  [data-shape-active='amalaka'] .st-ribs { opacity: 1; }
+  .st-part.is-on { fill: color-mix(in srgb, var(--laterite) 22%, transparent); stroke: var(--laterite); }
+  [data-stupa].has-part .st-part:not(.is-on) { opacity: 0.45; }
+
+  .st-parts { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; }
+  .st-parts button {
+    appearance: none; background: none; border: 0; border-bottom: 1px solid var(--rule); width: 100%; text-align: left;
+    padding: 7px 0; font: inherit; color: var(--ink); cursor: pointer; display: flex; justify-content: space-between; gap: 8px; align-items: baseline;
+  }
+  .st-parts .si { color: var(--ink-3); font-size: 0.78em; }
+  .st-parts button[aria-pressed='true'] { color: var(--laterite-ink); border-bottom-color: var(--laterite); }
+  .st-text { min-height: 3.2em; color: var(--ink-2); font-size: 1.02rem; }
+  .st-shapes-label { margin-top: 20px; }
+  .st-shapes { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 10px; }
+  .st-shapes button {
+    appearance: none; border: 1px solid var(--rule); background: transparent; color: var(--ink-2); font: inherit; font-size: 0.86rem;
+    padding: 5px 11px; border-radius: 999px; cursor: pointer;
+  }
+  .st-shapes button[aria-checked='true'] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .st-shape-note { font-size: 0.92rem; color: var(--ink-3); }
+  @media (max-width: 860px) { .stupa-fig { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-stupa]')) {
+    const partEls = root.querySelectorAll<SVGGElement>('.st-part');
+    const btns = root.querySelectorAll<HTMLButtonElement>('[data-part-btn]');
+    const text = root.querySelector<HTMLElement>('.st-text')!;
+    const texts: Record<string, string> = {
+      kotha: 'The pinnacle: a crystal or metal finial that catches the light first.',
+      kerella: 'The tapering spire, ringed like a stack of parasols.',
+      devatha: 'The cylindrical neck, sometimes carved with figures of deities.',
+      hatharas: 'The square “tee” block that sits on top of the dome.',
+      garbha: 'The dome itself — solid brick. The relic chamber lies sealed deep inside; a stupa is not a building you enter.',
+      pesa: 'Three diminishing terraces at the base. Walk them clockwise, keeping the stupa on your right.',
+    };
+    function setPart(id: string) {
+      root.classList.add('has-part');
+      partEls.forEach((p) => p.classList.toggle('is-on', p.dataset.part === id));
+      btns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.partBtn === id)));
+      text.textContent = texts[id];
+    }
+    partEls.forEach((p) => p.addEventListener('click', () => setPart(p.dataset.part!)));
+    btns.forEach((b) => b.addEventListener('click', () => setPart(b.dataset.partBtn!)));
+
+    const dome = root.querySelector<SVGPathElement>('.st-dome')!;
+    const spire = root.querySelector<SVGGElement>('.st-spire')!;
+    const shapeBtns = root.querySelectorAll<HTMLButtonElement>('[data-shape]');
+    shapeBtns.forEach((b) =>
+      b.addEventListener('click', () => {
+        shapeBtns.forEach((o) => o.setAttribute('aria-checked', String(o === b)));
+        const d = b.dataset.d!;
+        dome.style.setProperty('d', `path("${d}")`);
+        dome.setAttribute('d', d);
+        spire.style.transform = `translateY(${Number(b.dataset.top) - 197}px)`;
+        root.dataset.shapeActive = b.dataset.shape;
+        root.querySelector('.st-term')!.textContent = b.dataset.term!;
+        root.querySelector('.st-ex')!.textContent = b.dataset.ex!;
+      })
+    );
+  }
+</script>

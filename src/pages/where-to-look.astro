@@ -1,0 +1,125 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import IslandMap from '../components/IslandMap.astro';
+import { allPlaces, isTamilScript } from '../lib/places';
+
+const entries = (await getCollection('entries')).sort((a, b) => a.data.number - b.data.number);
+const places = allPlaces
+  .map((pl) => {
+    const finds = entries.flatMap((e) =>
+      e.data.places.filter((p) => p.placeSlug === pl.slug).map((p) => ({ entry: e, ...p }))
+    );
+    return { ...pl, finds, layers: [...new Set(finds.map((f) => f.entry.data.layer))] };
+  })
+  .filter((p) => p.finds.length)
+  .sort((a, b) => b.lat - a.lat); // north to south
+const pins = places.map((p) => ({ slug: p.slug, name: p.name, lat: p.lat, lon: p.lon, layers: p.layers, count: new Set(p.finds.map((f) => f.entry.id)).size }));
+const layers = ['Buddhist', 'Royal', 'Water', 'Hindu', 'Colonial', 'Plantation'];
+---
+<Base title="Where to look" description="A map of where to see each detail in the field guide, from Jaffna's gopurams to Galle's VOC gate.">
+  <header class="wrap page-head">
+    <p class="label">Where to look · north to south</p>
+    <h1>The island, <em>read</em> by detail.</h1>
+    <p class="intro">{places.length} places and the details worth looking for at each. Choose a pin or a layer, then follow the links to the plates.</p>
+  </header>
+  <div class="wrap wtl" data-wtl>
+    <div class="wtl-map">
+      <div class="filters" role="group" aria-label="Show places by layer">
+        <button type="button" class="chip" data-f="all" aria-pressed="true">All</button>
+        {layers.map((l) => <button type="button" class="chip" data-f={l} aria-pressed="false"><span class="layer" data-layer={l}>{l}</span></button>)}
+      </div>
+      <IslandMap pins={pins} />
+      <p class="map-credit">Base map: NordNordWest, Wikimedia Commons, CC BY-SA 3.0 DE</p>
+    </div>
+    <ol class="wtl-list">
+      {places.map((p) => (
+        <li id={`place-${p.slug}`} class="pl" data-layers={p.layers.join(' ')} tabindex="-1">
+          <p class="pl-region label">{p.region} province</p>
+          <h2>{p.name} <span class:list={['pl-native', isTamilScript(p.nativeName) ? 'ta' : 'si']} lang={isTamilScript(p.nativeName) ? 'ta' : 'si'}>{p.nativeName}</span></h2>
+          <p class="pl-blurb">{p.blurb}</p>
+          <ul class="finds">
+            {p.finds.map((f) => (
+              <li data-layer={f.entry.data.layer}>
+                <a href={`/plates/${f.entry.id}/`}>
+                  <span class="mono">Pl. {String(f.entry.data.number).padStart(2, '0')}</span>
+                  <span class="f-title">{f.entry.data.title}{f.best && <span class="star" title="Best example on the island"> ★</span>}</span>
+                  <span class="f-where">{f.where}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ol>
+  </div>
+</Base>
+<style>
+  .page-head { padding-top: clamp(32px, 6vw, 80px); padding-bottom: 32px; }
+  h1 { font-size: clamp(2.8rem, 1.4rem + 5.4vw, 6.4rem); font-weight: 330; letter-spacing: -0.035em; margin-top: 12px; }
+  h1 em { color: var(--laterite); }
+  .intro { max-width: 52ch; color: var(--ink-2); font-size: 1.15rem; margin-top: 18px; }
+  .wtl { display: grid; grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.15fr); gap: clamp(28px, 5vw, 80px); align-items: start; }
+  .wtl-map { position: sticky; top: 76px; }
+  .filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .chip { appearance: none; background: transparent; border: 1px solid var(--rule-strong); color: var(--ink); padding: 6px 12px; border-radius: 999px; font-family: var(--f-mono); font-size: 0.66rem; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; }
+  .chip[aria-pressed='true'] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .map-credit { font-size: 0.74rem; color: var(--ink-3); margin-top: 6px; }
+  .wtl-list { list-style: none; margin: 0; padding: 0; }
+  .pl { padding: 26px 0 28px; border-top: 1px solid var(--rule-strong); scroll-margin-top: 90px; transition: background 0.4s, opacity 0.3s; }
+  .pl:focus { outline: none; }
+  .pl.is-active { background: linear-gradient(90deg, color-mix(in srgb, var(--ochre) 12%, transparent), transparent 70%); }
+  .pl.is-dim { opacity: 0.3; }
+  .pl h2 { font-size: clamp(1.8rem, 1.3rem + 1.6vw, 2.6rem); }
+  .pl-native { font-size: 0.5em; color: var(--ink-3); margin-left: 0.3em; white-space: nowrap; }
+  .pl-blurb { color: var(--ink-2); margin: 10px 0 14px; max-width: 56ch; }
+  .finds { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .finds a { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 0 12px; text-decoration: none; padding: 10px 12px; background: var(--paper-2); border-left: 3px solid var(--layer-c); }
+  .finds a:hover { background: var(--paper-3); }
+  .finds .mono { font-size: 0.66rem; color: var(--ink-3); padding-top: 0.45em; grid-row: span 2; }
+  .f-title { font-size: 1.15rem; }
+  .star { color: var(--ochre); }
+  .f-where { font-size: 0.9rem; color: var(--ink-2); }
+  @media (max-width: 860px) {
+    .wtl { grid-template-columns: 1fr; }
+    .wtl-map { position: static; max-width: 420px; margin-inline: auto; width: 100%; }
+  }
+</style>
+<script>
+  const root = document.querySelector<HTMLElement>('[data-wtl]');
+  if (root) {
+    const pins = root.querySelectorAll<HTMLElement>('.pin');
+    const items = root.querySelectorAll<HTMLElement>('.pl');
+    function activate(slug: string | null) {
+      pins.forEach((p) => p.classList.toggle('is-active', p.dataset.pin === slug));
+      items.forEach((i) => i.classList.toggle('is-active', i.id === `place-${slug}`));
+    }
+    pins.forEach((p) => {
+      const a = p.querySelector('a')!;
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const el = document.getElementById(`place-${p.dataset.pin}`);
+        activate(p.dataset.pin!);
+        el?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+        el?.focus({ preventScroll: true });
+        history.replaceState(null, '', `#place-${p.dataset.pin}`);
+      });
+    });
+    if (location.hash.startsWith('#place-')) activate(location.hash.slice(7));
+    // highlight pin of the place nearest the top while scrolling
+    if ('IntersectionObserver' in window && matchMedia('(min-width: 861px)').matches) {
+      const io = new IntersectionObserver((es) => {
+        for (const e of es) if (e.isIntersecting) activate(e.target.id.slice(6));
+      }, { rootMargin: '-30% 0px -60% 0px' });
+      items.forEach((i) => io.observe(i));
+    }
+    const chips = root.querySelectorAll<HTMLButtonElement>('.chip');
+    chips.forEach((c) => c.addEventListener('click', () => {
+      const f = c.dataset.f!;
+      chips.forEach((o) => o.setAttribute('aria-pressed', String(o === c)));
+      const match = (s: string) => f === 'all' || s.split(' ').includes(f);
+      pins.forEach((p) => p.classList.toggle('is-dim', !match(p.dataset.layers || '')));
+      items.forEach((i) => i.classList.toggle('is-dim', !match(i.dataset.layers || '')));
+    }));
+  }
+</script>

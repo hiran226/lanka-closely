@@ -1,0 +1,34 @@
+---
+import Base from '../layouts/Base.astro';
+import etiquette from '../data/etiquette.json';
+---
+<Base title="How to look, respectfully" description="Etiquette for looking closely at Sri Lanka's temples, kovils and heritage sites: shoes, clothing, Buddha images, photography and more.">
+  <header class="wrap page-head">
+    <p class="label">How to look</p>
+    <h1>Looking closely is a&nbsp;privilege, <em>not a&nbsp;right.</em></h1>
+    <p class="intro">Most of what this guide describes is still in use. A moonstone is a step someone climbs to pray, a gopuram is the gate to a working temple, and a line room is somebody's home. These notes are the courtesies that keep looking from turning into intruding.</p>
+  </header>
+  <ol class="wrap rules">
+    {etiquette.map((e, i) => (
+      <li class="rule reveal">
+        <span class="num mono">{String(i + 1).padStart(2, '0')}</span>
+        <h2>{e.title}</h2>
+        <p>{e.body}</p>
+      </li>
+    ))}
+  </ol>
+  <p class="wrap note">Rules differ between sites and change over time, so follow the signboards and the custodians first. Sources: Central Cultural Fund visitor guidance; Rough Guides; srilankatrip.com; traveldojo; Sri Lanka Department of Immigration and Emigration.</p>
+</Base>
+<style>
+  .page-head { padding-top: clamp(32px, 6vw, 80px); padding-bottom: 40px; }
+  h1 { font-size: clamp(2.6rem, 1.4rem + 4.6vw, 5.8rem); font-weight: 330; letter-spacing: -0.03em; margin-top: 12px; max-width: 16ch; }
+  h1 em { color: var(--laterite); }
+  .intro { max-width: 58ch; color: var(--ink-2); font-size: 1.15rem; margin-top: 22px; }
+  .rules { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 clamp(24px, 5vw, 72px); margin: 24px auto 0; }
+  .rule { padding: 26px 0 28px; border-top: 1px solid var(--rule-strong); display: grid; grid-template-columns: 48px 1fr; gap: 0 12px; }
+  .num { color: var(--laterite); padding-top: 0.6em; grid-row: span 2; }
+  .rule h2 { font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem); margin-bottom: 8px; }
+  .rule p { margin: 0; color: var(--ink-2); }
+  .note { margin-top: 40px; color: var(--ink-3); font-size: 0.88rem; max-width: 70ch; }
+  @media (max-width: 760px) { .rules { grid-template-columns: 1fr; } }
+</style>

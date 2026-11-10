@@ -1,0 +1,187 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Moonstone from '../components/Moonstone.astro';
+import PlateCard from '../components/PlateCard.astro';
+import Photo from '../components/Photo.astro';
+import IslandMap from '../components/IslandMap.astro';
+import { allPlaces } from '../lib/places';
+
+const entries = (await getCollection('entries')).sort((a, b) => a.data.number - b.data.number);
+const layers = ['Buddhist', 'Royal', 'Water', 'Hindu', 'Colonial', 'Plantation'].filter((l) => entries.some((e) => e.data.layer === l));
+const totalCues = entries.reduce((n, e) => n + e.data.lookFor.length, 0);
+
+const pins = allPlaces.map((pl) => {
+  const es = entries.filter((e) => e.data.places.some((p) => p.placeSlug === pl.slug));
+  return { slug: pl.slug, name: pl.name, lat: pl.lat, lon: pl.lon, layers: [...new Set(es.map((e) => e.data.layer))], count: es.length, href: `/where-to-look/#place-${pl.slug}` };
+}).filter((p) => p.count > 0);
+---
+<Base>
+  <section class="hero wrap">
+    <p class="label hero-label">A field guide · {entries.length} plates · {pins.length} places</p>
+    <h1 class="hero-title">Learn to <em>read</em><br /> Sri Lanka.</h1>
+    <div class="hero-sub">
+      <p class="lede">Guidebooks tell you where to go. This one teaches you what you're looking at when you get there — the carved thresholds, guardian stones, brick mountains, ancient tanks and painted towers that repeat across the island, and what they meant to the people who made them.</p>
+      <p class="hero-links"><a href="#begin" class="btn">Start at the bottom step</a> <a href="#plates" class="text-link">Browse the plates</a></p>
+    </div>
+  </section>
+
+  <div class="hero-photo">
+    <Photo k="hero" eager sizes="100vw" widths={[640, 1000, 1400, 1800]} />
+  </div>
+
+  <section class="wrap begin" id="begin" aria-labelledby="begin-h">
+    <div class="begin-head">
+      <p class="label">Plate 01 · a first lesson</p>
+      <h2 id="begin-h">Every staircase begins with a&nbsp;lesson.</h2>
+      <p class="begin-intro">At the foot of the steps into an ancient shrine you'll find a carved half-moon: the <em>sandakada pahana</em>, or moonstone. Most visitors photograph it and walk on. Read it instead — from the outside in, the way your feet approach it.</p>
+    </div>
+    <Moonstone />
+    <p class="begin-more"><a href="/plates/moonstone/" class="text-link">The full moonstone plate, with the best places to see one →</a></p>
+  </section>
+
+  <section class="plates-sec" id="plates" aria-labelledby="plates-h">
+    <div class="wrap">
+      <div class="plates-head">
+        <h2 id="plates-h">The plates</h2>
+        <p>Eleven details that recur across the island. Each plate covers what to look for, what it meant, how it changed, the usual misreadings, and where the best examples are.</p>
+      </div>
+      <div class="filters" role="group" aria-label="Filter plates by layer">
+        <button type="button" class="chip" data-filter="all" aria-pressed="true">All</button>
+        {layers.map((l) => (
+          <button type="button" class="chip" data-filter={l} aria-pressed="false"><span class="layer" data-layer={l}>{l}</span></button>
+        ))}
+      </div>
+      <ul class="plate-grid">
+        {entries.map((e, i) => <PlateCard entry={e} eager={i < 3} />)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap why" aria-labelledby="why-h">
+    <blockquote class="reveal">
+      <p>“…otherwise all you see is brick and stone.”</p>
+      <footer class="label">A visitor's review of Anuradhapura, Tripadvisor</footer>
+    </blockquote>
+    <div class="why-text reveal">
+      <h2 id="why-h" class="label">Why this guide exists</h2>
+      <p>Sri Lanka's travel websites are organised by place: what to see in Kandy, or ten things to do in Galle. Interpretation is left to signboards and hired guides, and studies of visitors at the ancient cities keep finding the same gap. People enjoy these sites more when they understand them.</p>
+      <p>So this guide is organised by <em>detail</em>. Learn a moonstone once and you can read it at Anuradhapura, Polonnaruwa and a village temple you didn't plan to visit. The aim is to give the island's Buddhist, Hindu, colonial and plantation histories their own vocabulary, so that none of them is flattened into a single "heritage".</p>
+    </div>
+  </section>
+
+  <section class="wrap map-teaser" aria-labelledby="map-h">
+    <div class="mt-text">
+      <p class="label">Where to look</p>
+      <h2 id="map-h">{pins.length} places, from Jaffna to Galle.</h2>
+      <p>Every plate names its best examples. The map pulls them together, so you can see what's worth noticing on a route you've already planned.</p>
+      <p><a href="/where-to-look/" class="btn">Open the map</a></p>
+      <div class="log" data-log hidden>
+        <p class="label">Your field log</p>
+        <p class="log-line"><strong data-log-n>0</strong> of {totalCues} details spotted, across <span data-log-p>0</span> plates.</p>
+        <div class="log-bar"><span data-log-bar style="width:0%"></span></div>
+        <p class="log-note">Kept in this browser only. Tick details off on each plate as you find them.</p>
+      </div>
+    </div>
+    <div class="mt-map"><IslandMap pins={pins} /></div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding-top: clamp(40px, 8vw, 110px); padding-bottom: clamp(28px, 4vw, 48px); }
+  .hero-title {
+    font-size: clamp(3.4rem, 1.2rem + 10vw, 11.5rem); line-height: 0.86; letter-spacing: -0.045em; font-weight: 320;
+    margin: 18px 0 0; font-variation-settings: 'opsz' 72;
+  }
+  .hero-title em { font-style: italic; color: var(--laterite); font-weight: 300; }
+  .hero-sub { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 32px 64px; margin-top: clamp(28px, 4vw, 56px); align-items: end; }
+  .lede { font-size: clamp(1.15rem, 0.95rem + 0.7vw, 1.5rem); line-height: 1.4; margin: 0; max-width: 40ch; }
+  .hero-links { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; margin: 0; justify-self: end; }
+  .btn {
+    display: inline-block; background: var(--ink); color: var(--paper); text-decoration: none; padding: 13px 20px;
+    font-family: var(--f-mono); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 1px;
+  }
+  .btn:hover { background: var(--laterite); color: #fff; }
+  .text-link { font-family: var(--f-mono); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .hero-photo { width: 100%; max-width: 1600px; margin-inline: auto; padding-inline: var(--gutter); }
+  .hero-photo :global(.photo-frame) { aspect-ratio: 21 / 9; }
+  .hero-photo :global(figcaption) { max-width: var(--wrap); }
+
+  .begin { margin-top: clamp(72px, 10vw, 150px); }
+  .begin-head { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px 64px; align-items: end; margin-bottom: clamp(28px, 4vw, 56px); }
+  .begin-head .label { grid-column: 1 / -1; }
+  .begin-head h2 { font-size: clamp(2.3rem, 1.4rem + 3.6vw, 4.6rem); font-weight: 350; }
+  .begin-intro { margin: 0; color: var(--ink-2); max-width: 42ch; }
+  .begin-more { margin-top: 28px; }
+
+  .plates-sec { margin-top: clamp(80px, 11vw, 160px); padding: clamp(48px, 7vw, 96px) 0; background: var(--paper-2); border-block: 1px solid var(--rule); }
+  .plates-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px 64px; align-items: end; }
+  .plates-head h2 { font-size: clamp(3rem, 1.6rem + 5vw, 6.4rem); font-weight: 330; letter-spacing: -0.035em; font-style: italic; }
+  .plates-head p { margin: 0; color: var(--ink-2); max-width: 46ch; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 32px 0 28px; }
+  .chip {
+    appearance: none; background: transparent; border: 1px solid var(--rule-strong); color: var(--ink); padding: 7px 14px;
+    border-radius: 999px; font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+  }
+  .chip[aria-pressed='true'] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .plate-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(28px, 3vw, 44px) clamp(18px, 2.4vw, 32px); }
+  .plate-grid :global(.plate[hidden]) { display: none; }
+
+  .why { margin-top: clamp(80px, 11vw, 160px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px 72px; align-items: start; }
+  blockquote { margin: 0; }
+  blockquote p { font-family: var(--f-display); font-size: clamp(2rem, 1.2rem + 3vw, 3.8rem); line-height: 1.05; font-style: italic; font-weight: 320; margin: 0 0 16px; letter-spacing: -0.02em; }
+  .why-text h2 { margin-bottom: 14px; }
+  .why-text p { color: var(--ink-2); }
+
+  .map-teaser { margin-top: clamp(80px, 11vw, 160px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 0.8fr); gap: 40px 72px; align-items: center; }
+  .mt-text h2 { font-size: clamp(2.2rem, 1.4rem + 3vw, 4rem); font-weight: 340; margin: 10px 0 18px; }
+  .mt-text > p:not(.label) { color: var(--ink-2); max-width: 44ch; }
+  .mt-map { max-width: 460px; width: 100%; justify-self: center; }
+  .log { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--rule); max-width: 420px; }
+  .log-line { font-size: 1.15rem; margin: 6px 0 10px; }
+  .log-bar { height: 4px; background: var(--paper-3); }
+  .log-bar span { display: block; height: 100%; background: var(--laterite); transition: width 0.8s var(--ease); }
+  .log-note { font-size: 0.82rem; color: var(--ink-3); margin-top: 8px; }
+
+  @media (max-width: 1000px) { .plate-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 760px) {
+    .hero-sub, .begin-head, .plates-head, .why, .map-teaser { grid-template-columns: 1fr; }
+    .hero-links { justify-self: start; }
+    .hero-photo { padding-inline: 0; }
+    .hero-photo :global(.photo-frame) { aspect-ratio: 4 / 3; }
+    .hero-photo :global(figcaption) { padding-inline: var(--gutter); }
+    .mt-map { max-width: 340px; }
+  }
+  @media (max-width: 560px) { .plate-grid { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  import { readLog } from '../scripts/log';
+  // layer filter
+  const chips = document.querySelectorAll<HTMLButtonElement>('.chip[data-filter]');
+  const items = document.querySelectorAll<HTMLElement>('[data-filter-item]');
+  chips.forEach((c) =>
+    c.addEventListener('click', () => {
+      const f = c.dataset.filter!;
+      chips.forEach((o) => o.setAttribute('aria-pressed', String(o === c)));
+      items.forEach((it) => {
+        const show = f === 'all' || it.dataset.filterItem === f;
+        it.hidden = !show;
+        if (show) it.classList.add('is-in');
+      });
+    })
+  );
+  // field log summary
+  const log = readLog();
+  const n = Object.values(log).reduce((a, v) => a + (Array.isArray(v) ? v.length : 0), 0);
+  const p = Object.values(log).filter((v) => Array.isArray(v) && v.length).length;
+  const box = document.querySelector<HTMLElement>('[data-log]');
+  if (box && n > 0) {
+    box.hidden = false;
+    box.querySelector('[data-log-n]')!.textContent = String(n);
+    box.querySelector('[data-log-p]')!.textContent = String(p);
+    const total = Number(box.querySelector('.log-line')!.textContent!.match(/of (\d+)/)?.[1] ?? 1);
+    requestAnimationFrame(() => ((box.querySelector('[data-log-bar]') as HTMLElement).style.width = `${Math.min(100, (n / total) * 100)}%`));
+  }
+</script>

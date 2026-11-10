@@ -1,0 +1,16 @@
+[
+  {"slug":"anuradhapura","name":"Anuradhapura","nativeName":"අනුරාධපුරය","region":"North Central","lat":8.3114,"lon":80.4037,"blurb":"The first great royal and monastic city, where moonstones, guardstones and the largest stupas are at their most ambitious."},
+  {"slug":"polonnaruwa","name":"Polonnaruwa","nativeName":"පොළොන්නරුව","region":"North Central","lat":7.9403,"lon":81.0188,"blurb":"The later medieval capital beside Parakrama Samudra, where the entrance carving grows busier and the Vatadage shows the whole ensemble."},
+  {"slug":"medirigiriya","name":"Medirigiriya","nativeName":"මැදිරිගිරිය","region":"North Central","lat":8.143,"lon":80.962,"blurb":"A quiet site about 34 km from Polonnaruwa with what many consider the most intact and elegant vatadage."},
+  {"slug":"tiriyaya","name":"Tiriyaya","nativeName":"තිරියාය","region":"Eastern","lat":8.866,"lon":81.006,"blurb":"A hilltop stupa in Trincomalee district, enlarged in the 8th century CE and later given a circular vatadage."},
+  {"slug":"mihintale","name":"Mihintale","nativeName":"මිහින්තලේ","region":"North Central","lat":8.351,"lon":80.516,"blurb":"A sacred hill east of Anuradhapura, home to the bell-shaped Ambasthala Dagaba."},
+  {"slug":"sigiriya","name":"Sigiriya","nativeName":"සීගිරිය","region":"Central","lat":7.957,"lon":80.760,"blurb":"Kashyapa I's rock citadel, with the Mirror Wall, the fresco pocket, the lion's paws and working water gardens."},
+  {"slug":"kala-wewa","name":"Kala Wewa","nativeName":"කලා වැව","region":"North Central","lat":8.02,"lon":80.53,"blurb":"Dhatusena's 5th-century reservoir, head of the gently falling Yodha Ela canal to Anuradhapura."},
+  {"slug":"kandy","name":"Kandy","nativeName":"මහනුවර","region":"Central","lat":7.2936,"lon":80.6413,"blurb":"The last royal capital, home to the Temple of the Tooth and a base for the painted and carved temples of the surrounding hills."},
+  {"slug":"embekke","name":"Embekke","nativeName":"ඇම්බැක්කේ","region":"Central","lat":7.226,"lon":80.565,"blurb":"A village near Kandy whose devale is famed for its carved timber pillars and brackets."},
+  {"slug":"jaffna","name":"Jaffna (Nallur)","nativeName":"யாழ்ப்பாணம்","region":"Northern","lat":9.675,"lon":80.030,"blurb":"The northern Tamil city whose Nallur Kandaswamy Kovil is Murugan's great temple and the setting for a 25-day festival."},
+  {"slug":"trincomalee","name":"Trincomalee (Koneswaram)","nativeName":"திருகோணமலை","region":"Eastern","lat":8.581,"lon":81.245,"blurb":"An east-coast harbour town where the Shiva temple of Koneswaram stands on Swami Rock above the sea."},
+  {"slug":"galle","name":"Galle Fort","nativeName":"ගාල්ල","region":"Southern","lat":6.026,"lon":80.217,"blurb":"A walled town on the south coast whose gate, bastions and church floor record Portuguese, Dutch and British rule."},
+  {"slug":"loolecondera","name":"Loolecondera","nativeName":"ලූල්කඳුර","region":"Central","lat":7.17,"lon":80.70,"blurb":"The estate near Kandy where James Taylor planted 19 acres of tea in 1867."},
+  {"slug":"hill-country","name":"Hill Country (Hatton)","nativeName":"மலையகம்","region":"Central","lat":6.891,"lon":80.595,"blurb":"The tea estates around Hatton, a working landscape and home to Malaiyaha Tamil communities."}
+]
