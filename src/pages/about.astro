@@ -1,12 +1,25 @@
 ---
 import Base from '../layouts/Base.astro';
 import { allCredits, mapCredit } from '../lib/photos';
+import { Image } from 'astro:assets';
+import maker from '../assets/about/maker.jpg';
 ---
 <Base title="About & sources" description="Why Lanka, Closely exists, how it was researched, and credits for every photograph.">
   <header class="wrap page-head">
     <p class="label">About</p>
     <h1>A guide to <em>noticing</em>.</h1>
   </header>
+  <section class="wrap maker" aria-labelledby="maker-h">
+    <figure class="maker-photo">
+      <Image src={maker} alt="Hiran, the maker of Lanka, Closely, seated at a wooden table in front of a red brick wall" widths={[360, 600, 900]} sizes="(max-width: 760px) 70vw, 340px" format="webp" quality={80} />
+    </figure>
+    <div class="maker-text">
+      <p class="label">Who made this</p>
+      <h2 id="maker-h">Hello, I’m <em>Hiran</em>.</h2>
+      <p>I’m a cybersecurity graduate from Sri Lanka. Closely is a personal experiment: a small, carefully made website about the island. I wanted to make something that helps visitors, and Sri Lankans too, slow down and actually read the places they visit instead of just photographing them. It’s a side project, not a business, so there are no ads, no bookings and no tracking.</p>
+      <p>If you spot a mistake, or think a detail deserves its own plate, I’d like to hear about it on <a href="https://github.com/hiran226/lanka-closely" rel="noopener">GitHub</a>.</p>
+    </div>
+  </section>
   <div class="wrap about-grid">
     <div class="prose">
       <h2>The gap</h2>
@@ -43,6 +56,19 @@ import { allCredits, mapCredit } from '../lib/photos';
   .page-head { padding-top: clamp(32px, 6vw, 80px); padding-bottom: 40px; }
   h1 { font-size: clamp(2.8rem, 1.4rem + 5vw, 6rem); font-weight: 330; letter-spacing: -0.035em; margin-top: 12px; }
   h1 em { color: var(--laterite); }
+  .maker {
+    display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: clamp(24px, 5vw, 72px); align-items: center;
+    padding-bottom: clamp(48px, 7vw, 88px); margin-bottom: clamp(48px, 7vw, 88px); border-bottom: 1px solid var(--rule-strong);
+  }
+  .maker-photo { margin: 0; background: var(--paper-3); box-shadow: 10px 10px 0 var(--paper-2); }
+  .maker-photo :global(img) { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; }
+  .maker-text h2 { font-size: clamp(2.2rem, 1.4rem + 3vw, 3.8rem); font-weight: 340; margin: 10px 0 20px; }
+  .maker-text h2 em { color: var(--laterite); }
+  .maker-text p:not(.label) { color: var(--ink-2); max-width: 54ch; font-size: 1.08rem; }
+  @media (max-width: 760px) {
+    .maker { grid-template-columns: 1fr; }
+    .maker-photo { max-width: 300px; }
+  }
   .about-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
   .credits ul { list-style: none; margin: 14px 0 20px; padding: 0; }
   .credits li { padding: 9px 0; border-top: 1px solid var(--rule); display: flex; flex-direction: column; gap: 2px; font-size: 0.9rem; }
