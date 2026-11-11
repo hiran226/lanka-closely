@@ -1,4 +1,4 @@
+# This site asks search engines not to index it (see the noindex tag and header).
+# Crawling stays allowed so search engines can see that instruction.
 User-agent: *
 Allow: /
-
-Sitemap: https://lanka-closely.hiran26personal.workers.dev/sitemap-index.xml
